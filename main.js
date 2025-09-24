@@ -246,12 +246,23 @@ function renderTupleForSample(sample) {
         c.style.display = 'inline-block';
         tupleContainer.appendChild(c);
     });
+    // Arrow pointing to the target
+    const arrow = document.createElement('span');
+    arrow.textContent = '→';
+    arrow.style.fontSize = '18px';
+    arrow.style.lineHeight = '18px';
+    arrow.style.color = '#333';
+    arrow.style.margin = '0 6px';
+    arrow.style.display = 'inline-block';
+    tupleContainer.appendChild(arrow);
     const target = sample[4];
     const targetCircle = document.createElement('span');
     targetCircle.className = `circle class-${target}`;
-    targetCircle.title = `True class: ${target}`;
+    targetCircle.title = `True class (target): ${target}`;
     targetCircle.style.display = 'inline-block';
-    targetCircle.style.marginLeft = '12px';
+    targetCircle.style.marginLeft = '4px';
+    targetCircle.style.border = '3px solid #000';
+    targetCircle.style.boxShadow = '0 0 6px rgba(0,0,0,0.45)';
     tupleContainer.appendChild(targetCircle);
     tuplesPanel.appendChild(tupleContainer);
 }
