@@ -442,14 +442,22 @@ function renderT2MetaForSample(sample) {
     circle.className = `circle class-${metaPred}`;
     circle.title = `Meta prediction: ${metaPred}`;
     predHolder.appendChild(circle);
-    const arrow = document.createElement('div');
-    arrow.textContent = '↓';
-    arrow.style.fontSize = '16px';
-    arrow.style.lineHeight = '16px';
-    arrow.style.color = '#666';
-    arrow.style.marginTop = '4px';
-    predHolder.appendChild(arrow);
     metaPanel.appendChild(predHolder);
+    // Update overall test accuracy display as well
+    renderT2Accuracy(window.T2_test || []);
+}
+
+function renderT2Accuracy(test) {
+    const accDiv = document.getElementById('t2Accuracy');
+    if (!accDiv || !stackedTree || !trees || !test.length) return;
+    let correct = 0;
+    for (const s of test) {
+        const preds = trees.map(obj => predictTree(obj.tree, s));
+        const metaPred = predictTree(stackedTree, preds);
+        if (metaPred === s[4]) correct++;
+    }
+    const acc = (correct / test.length) * 100;
+    accDiv.textContent = `Meta-learner accuracy on test: ${acc.toFixed(1)}% (${correct}/${test.length})`;
 }
 
 function renderT2(test) {
@@ -493,4 +501,5 @@ function renderT2(test) {
     renderAllTuples();
     renderStackedTreeOnTuples();
     renderT2(test);
+    renderT2Accuracy(test);
 })();
