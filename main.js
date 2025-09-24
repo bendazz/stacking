@@ -460,6 +460,37 @@ function renderT2Accuracy(test) {
     accDiv.textContent = `Meta-learner accuracy on test: ${acc.toFixed(1)}% (${correct}/${test.length})`;
 }
 
+function renderT2BaseAccuracies(test) {
+    const container = document.getElementById('t2BaseAccuracies');
+    if (!container || !trees || !test.length) return;
+    container.innerHTML = '';
+    for (let i = 0; i < trees.length; i++) {
+        let correct = 0;
+        for (const s of test) {
+            const pred = predictTree(trees[i].tree, s);
+            if (pred === s[4]) correct++;
+        }
+        const acc = (correct / test.length) * 100;
+        const card = document.createElement('div');
+        card.style.background = '#fff';
+        card.style.border = '1px solid #ddd';
+        card.style.borderRadius = '8px';
+        card.style.padding = '8px 12px';
+        card.style.minWidth = '160px';
+        card.style.textAlign = 'center';
+        card.style.boxShadow = '0 1px 4px rgba(0,0,0,0.06)';
+        const title = document.createElement('div');
+        title.textContent = `Tree ${i+1}`;
+        title.style.fontWeight = '600';
+        title.style.marginBottom = '4px';
+        const val = document.createElement('div');
+        val.textContent = `${acc.toFixed(1)}% (${correct}/${test.length})`;
+        card.appendChild(title);
+        card.appendChild(val);
+        container.appendChild(card);
+    }
+}
+
 function renderT2(test) {
     const setDiv = document.getElementById('setT2');
     if (!setDiv) return;
@@ -502,4 +533,5 @@ function renderT2(test) {
     renderStackedTreeOnTuples();
     renderT2(test);
     renderT2Accuracy(test);
+    renderT2BaseAccuracies(test);
 })();
