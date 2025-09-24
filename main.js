@@ -56,6 +56,7 @@ function renderT1(T1) {
         circle.onclick = () => {
             clearT1Predictions();
             updateT1Predictions(sample);
+            renderTupleForSample(sample);
         };
         setDiv.appendChild(circle);
     });
@@ -180,12 +181,14 @@ function renderBaggedTreesForT1(trees) {
         renderTree(obj.tree, svgDiv);
         col.appendChild(svgDiv);
 
-        const predHolder = document.createElement('div');
-        predHolder.id = `t1-pred-holder-${i}`;
-        predHolder.style.marginTop = '8px';
-        predHolder.style.minHeight = '24px';
-        predHolder.style.display = 'flex';
-        predHolder.style.justifyContent = 'center';
+    const predHolder = document.createElement('div');
+    predHolder.id = `t1-pred-holder-${i}`;
+    predHolder.style.marginTop = '8px';
+    predHolder.style.minHeight = '40px';
+    predHolder.style.display = 'flex';
+    predHolder.style.flexDirection = 'column';
+    predHolder.style.alignItems = 'center';
+    predHolder.style.justifyContent = 'flex-start';
 
         group.appendChild(col);
         group.appendChild(predHolder);
@@ -207,12 +210,50 @@ function updateT1Predictions(sample) {
         const holder = document.getElementById(`t1-pred-holder-${i}`);
         if (!holder) continue;
         holder.innerHTML = '';
-        const pred = predictTree(trees[i].tree, sample);
-        const circle = document.createElement('span');
-        circle.className = `circle class-${pred}`;
-        circle.title = `Predicted class: ${pred}`;
-        holder.appendChild(circle);
+    const pred = predictTree(trees[i].tree, sample);
+    const circle = document.createElement('span');
+    circle.className = `circle class-${pred}`;
+    circle.title = `Predicted class: ${pred}`;
+    holder.appendChild(circle);
+    const arrow = document.createElement('div');
+    arrow.textContent = '↓';
+    arrow.style.fontSize = '16px';
+    arrow.style.lineHeight = '16px';
+    arrow.style.color = '#666';
+    arrow.style.marginTop = '4px';
+    holder.appendChild(arrow);
     }
+}
+
+function renderTupleForSample(sample) {
+    const tuplesPanel = document.getElementById('t1TuplePanel');
+    if (!tuplesPanel) return;
+    tuplesPanel.innerHTML = '';
+    if (!trees || typeof predictTree !== 'function') return;
+    const preds = trees.map(obj => predictTree(obj.tree, sample));
+    const tupleContainer = document.createElement('div');
+    tupleContainer.style.display = 'flex';
+    tupleContainer.style.alignItems = 'center';
+    tupleContainer.style.gap = '8px';
+    tupleContainer.style.border = '2px solid #bbb';
+    tupleContainer.style.borderRadius = '24px';
+    tupleContainer.style.padding = '8px 18px';
+    tupleContainer.style.background = '#f9f9f9';
+    preds.forEach(pred => {
+        const c = document.createElement('span');
+        c.className = `circle class-${pred}`;
+        c.title = `Predicted class: ${pred}`;
+        c.style.display = 'inline-block';
+        tupleContainer.appendChild(c);
+    });
+    const target = sample[4];
+    const targetCircle = document.createElement('span');
+    targetCircle.className = `circle class-${target}`;
+    targetCircle.title = `True class: ${target}`;
+    targetCircle.style.display = 'inline-block';
+    targetCircle.style.marginLeft = '12px';
+    tupleContainer.appendChild(targetCircle);
+    tuplesPanel.appendChild(tupleContainer);
 }
 
 (function() {
@@ -233,5 +274,4 @@ function updateT1Predictions(sample) {
     renderT1(T1);
     renderBaggedTrees(T0, trees);
     renderBaggedTreesForT1(trees);
-    renderAllTuples();
 })();
