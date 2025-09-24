@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iris Stacking Illustration</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 24px;
+        }
+        .set {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin: 32px 0;
+        }
+        .circle {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: inline-block;
+            border: 1px solid #ccc;
+        }
+        .class-0 { background: #e57373; }
+        .class-1 { background: #64b5f6; }
+        .class-2 { background: #81c784; }
+    </style>
+</head>
+<body>
+    <div id="panel1">
+        <h1>Iris Dataset: T0 Samples</h1>
+        <div id="setT0" class="set"></div>
+        <div id="baggedTreesPanel"></div>
+    </div>
+    <hr style="margin: 40px 0;">
+    <div id="panel2">
+        <h1>Iris Dataset: T1 Samples</h1>
+        <div id="setT1" class="set"></div>
+        <div id="baggedTreesPanel2"></div>
+    </div>
+    <hr style="margin: 40px 0;">
+    <div id="panel3">
+    <h1>Stacked Feature Tuples (T1)</h1>
+    <div id="tuplesPanel" style="display: flex; flex-wrap: wrap; gap: 16px; justify-content: center; margin: 32px 0;"></div>
+    <div id="stackedTreePanel" style="margin: 40px 0; display: flex; justify-content: center;"></div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script src="iris.js"></script>
+    <script src="bagging.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
