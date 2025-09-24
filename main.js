@@ -46,10 +46,17 @@ function renderT1(T1) {
     const setDiv = document.getElementById('setT1');
     if (!setDiv) return;
     setDiv.innerHTML = '';
-    T1.forEach(sample => {
+    // Ensure the trees are visible under panel 2
+    renderBaggedTreesForT1(trees || []);
+    T1.forEach((sample, idx) => {
         const circle = document.createElement('span');
         circle.className = `circle class-${sample[4]}`;
-        circle.title = `Class: ${sample[4]}`;
+        circle.title = `Class: ${sample[4]} (click to show predictions)`;
+        circle.style.cursor = 'pointer';
+        circle.onclick = () => {
+            clearT1Predictions();
+            updateT1Predictions(sample);
+        };
         setDiv.appendChild(circle);
     });
 }
@@ -136,6 +143,78 @@ function renderBaggedTrees(T0, trees) {
     });
 }
 
+function renderBaggedTreesForT1(trees) {
+    const panel = document.getElementById('baggedTreesPanel2');
+    if (!panel) return;
+    panel.innerHTML = '';
+    const treesDiv = document.createElement('div');
+    treesDiv.style.display = 'flex';
+    treesDiv.style.justifyContent = 'center';
+    treesDiv.style.gap = '32px';
+    treesDiv.style.flexWrap = 'wrap';
+    panel.appendChild(treesDiv);
+    trees.forEach((obj, i) => {
+        const group = document.createElement('div');
+        group.style.display = 'flex';
+        group.style.flexDirection = 'column';
+        group.style.alignItems = 'center';
+
+        const col = document.createElement('div');
+        col.style.display = 'flex';
+        col.style.flexDirection = 'column';
+        col.style.alignItems = 'center';
+        col.style.background = '#fff';
+        col.style.borderRadius = '12px';
+        col.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+        col.style.padding = '12px';
+        col.style.minWidth = '220px';
+
+        const title = document.createElement('div');
+        title.textContent = `Tree ${i+1}`;
+        title.style.textAlign = 'center';
+        title.style.fontWeight = 'bold';
+        title.style.marginBottom = '8px';
+        col.appendChild(title);
+
+        const svgDiv = document.createElement('div');
+        renderTree(obj.tree, svgDiv);
+        col.appendChild(svgDiv);
+
+        const predHolder = document.createElement('div');
+        predHolder.id = `t1-pred-holder-${i}`;
+        predHolder.style.marginTop = '8px';
+        predHolder.style.minHeight = '24px';
+        predHolder.style.display = 'flex';
+        predHolder.style.justifyContent = 'center';
+
+        group.appendChild(col);
+        group.appendChild(predHolder);
+        treesDiv.appendChild(group);
+    });
+}
+
+function clearT1Predictions() {
+    if (!trees) return;
+    for (let i = 0; i < trees.length; i++) {
+        const holder = document.getElementById(`t1-pred-holder-${i}`);
+        if (holder) holder.innerHTML = '';
+    }
+}
+
+function updateT1Predictions(sample) {
+    if (!trees || typeof predictTree !== 'function') return;
+    for (let i = 0; i < trees.length; i++) {
+        const holder = document.getElementById(`t1-pred-holder-${i}`);
+        if (!holder) continue;
+        holder.innerHTML = '';
+        const pred = predictTree(trees[i].tree, sample);
+        const circle = document.createElement('span');
+        circle.className = `circle class-${pred}`;
+        circle.title = `Predicted class: ${pred}`;
+        holder.appendChild(circle);
+    }
+}
+
 (function() {
     // Use IRIS_DATA from iris.js
     const split = trainTestSplit(IRIS_DATA, 0.2); // 80/20 split
@@ -153,5 +232,6 @@ function renderBaggedTrees(T0, trees) {
     renderT0(T0);
     renderT1(T1);
     renderBaggedTrees(T0, trees);
+    renderBaggedTreesForT1(trees);
     renderAllTuples();
 })();
